@@ -1,0 +1,71 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+import chromedriver_autoinstaller
+
+# Установить ChromeDriver
+chromedriver_autoinstaller.install()
+
+
+def set_local_storage(driver, key, value):
+    driver.execute_script(f"window.localStorage.setItem('{key}', '{value}');")
+
+
+def get_local_storage(driver, key):
+    return driver.execute_script(f"return window.localStorage.getItem('{key}');")
+
+
+def remove_local_storage(driver, key):
+    driver.execute_script(f"window.localStorage.removeItem('{key}');")
+
+
+def set_cookie(driver, key, value):
+    driver.add_cookie({"name": key, "value": value})
+
+
+def get_cookie(driver, key):
+    return driver.get_cookie(key)
+
+
+def delete_cookie(driver, key):
+    driver.delete_cookie(key)
+
+
+def main():
+    # Инициализация веб-драйвера
+    driver = webdriver.Chrome()
+    driver.get("https://github.com/")  # Откройте нужную веб-страницу
+
+    # Работа с LocalStorage
+    local_storage_key = 'testKey'
+    local_storage_value = 'testValue'
+
+    set_local_storage(driver, local_storage_key, local_storage_value)
+    fetched_value = get_local_storage(driver, local_storage_key)
+    print(f"Retrieved from LocalStorage: {fetched_value}")
+
+    remove_local_storage(driver, local_storage_key)
+    removed_value = get_local_storage(driver, local_storage_key)
+    print(f"Value after removal from LocalStorage: {removed_value}")
+
+    # Работа с Cookie
+    cookie_key = 'testCookie'
+    cookie_value = 'testValue'
+
+    driver.get("https://github.com/")  # Перезагрузите страницу для работы с куки
+
+    set_cookie(driver, cookie_key, cookie_value)
+    fetched_cookie = get_cookie(driver, cookie_key)
+    print(f"Retrieved from Cookie: {fetched_cookie}")
+
+    delete_cookie(driver, cookie_key)
+    removed_cookie = get_cookie(driver, cookie_key)
+    print(f"Value after removal from Cookie: {removed_cookie}")
+
+    # Закрытие веб-драйвера
+    driver.quit()
+
+
+if __name__ == "__main__":
+    main()
